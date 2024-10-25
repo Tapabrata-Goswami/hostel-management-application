@@ -4,11 +4,15 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 
 use App\Models\Guest;
 use App\Models\GuestPayment;
 use App\Models\guestComments;
 use App\Models\HostelUser;
+use App\Models\cashRegister;
+
+
 
 class AdminDashboard extends Controller
 {
@@ -16,7 +20,22 @@ class AdminDashboard extends Controller
         $totalGuests = Guest::count();
         $pendingPaymentsCount = GuestPayment::where('payment_status', 'pending')->count();
         $archivedGuestsCount = Guest::where('archive_status', true)->count();
-        return view('admin.dashboard')->with(['totalGuest'=>$totalGuests,'pendingPaymentsCount'=>$pendingPaymentsCount,'archiveGuest'=>$archivedGuestsCount]);
+
+        $cash = cashRegister::all();
+        $totalFund = 0;
+        $totalCashIn = 0;
+        $toalCashOut = 0;
+        foreach($cash as $c){
+            if($c->cash_flow == 1){
+                $totalCashIn +=$c->payments;
+            }else if($c->cash_flow == 0){
+                $toalCashOut += $c->payments;
+            }
+        }
+        $totalFund = $totalCashIn - $toalCashOut;
+
+
+        return view('admin.dashboard')->with(['totalGuest'=>$totalGuests,'pendingPaymentsCount'=>$pendingPaymentsCount,'archiveGuest'=>$archivedGuestsCount, 'cashFlow' => $totalFund]);
     }
     // Guest
     public function addGuestView(){
@@ -133,6 +152,7 @@ class AdminDashboard extends Controller
             $guest->bed_number = $request->bed_number;
             $guest->contact_no = $request->contact_no;
             $guest->email = $request->email;
+            $guest->code = $request->code;
             $guest->booking = $request->has('booking'); // If checked, set to true
             $guest->flyer = $request->has('flyer'); // If checked, set to true
             $guest->interdependent = $request->has('interdependent'); // If checked, set to true
@@ -280,6 +300,18 @@ class AdminDashboard extends Controller
             $guestPayment->payment_comment = $request->payment_comment;
             $guestPayment->save();
 
+
+            $guest = Guest::where('id', $request->guestId)->first();
+            $cashRegister = new cashRegister;
+            $cashRegister->code = $guest->code;
+            $cashRegister->guest_id = $request->guestId;
+            $cashRegister->payment_by = Session::get('f_name');
+            $cashRegister->user_id = Session::get('user_id');
+            $cashRegister->payments = $PaidAmount;
+            $cashRegister->cash_flow = 1;
+            $cashRegister->save();
+
+
             return redirect()->back()->with('success', 'Payment details updated successfully!');
         }
     }
@@ -287,6 +319,49 @@ class AdminDashboard extends Controller
         $guestPayment = GuestPayment::all();
         $guest = Guest::all();
         return view('admin.debtlist')->with(['guestPayment' => $guestPayment, 'guest' => $guest]);
+    }
+    public function cashRegister(){
+        $guests = Guest::all();
+        $user = HostelUser::all();
+        $cashRegister = cashRegister::all();
+        return view('admin.cashregister')->with(['cashRegister'=>$cashRegister,'user' => $user,'guests'=>$guests]);
+    }
+    public function deleteCashRegister(Request $request){
+        $crId = $request->crId;
+        $crData = cashRegister::find($crId);
+        if($crData){
+            $crData->delete();
+            return redirect()->back();
+        }
+    }
+
+    public function cashRegisterOutFlow(Request $request){
+        $cashRegister = new cashRegister;
+        if($request->type == "guest"){
+            $guest = Guest::where('code', $request->guestCode)->first();
+
+            $cashRegister->code = $guest->code;
+            $cashRegister->guest_id = $guest->id;
+            $cashRegister->payment_by = Session::get('f_name');
+            $cashRegister->user_id = Session::get('user_id');
+            $cashRegister->payments = $request->guestAmount;
+            $cashRegister->cash_flow = 0;
+            $cashRegister->save();
+
+        }else if($request->type == "other"){
+
+            $cashRegister->code = 'N/A';
+            $cashRegister->guest_id = 'N/A';
+            $cashRegister->payment_by = Session::get('f_name');
+            $cashRegister->user_id = Session::get('user_id');
+            $cashRegister->payments = $request->otherAmount;
+            $cashRegister->cash_flow = 0;
+            $cashRegister->cash_comments = $request->otherComments;
+            $cashRegister->save();
+        }
+
+        return true;
+
     }
 
     // public function countComment(Request $request){

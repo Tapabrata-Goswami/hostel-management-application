@@ -50,9 +50,9 @@
                                         <td>{{ $G->room_number }}/{{$G->bed_number}}</td>
                                         <td>{{$G->check_in_date}}</td>
                                         <td>{{$GP->daily ? 'Daily' : ''}}{{$GP->monthly ? 'Monthly' : ''}}</td>
-                                        <td>{{$GP->total_amount}}</td>
-                                        <td>{{$GP->paid_amount}}</td>
-                                        <td>{{$GP->pending_amount}}</td>
+                                        <td>${{$GP->total_amount}}</td>
+                                        <td>${{$GP->paid_amount}}</td>
+                                        <td>${{$GP->pending_amount}}</td>
                                     </tr>
                                     @php
                                         $count++;

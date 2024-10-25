@@ -111,6 +111,23 @@
             <!-- Divider -->
             <hr class="sidebar-divider">
 
+
+
+            <!-- Heading -->
+            <div class="sidebar-heading">
+                Cash Register
+            </div>
+            
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{route('cashRegister')}}">
+                <i class="fa-solid fa-calculator"></i>
+                    <span>Cash Register</span></a>
+            </li>
+
+
+            <hr class="sidebar-divider">
+
             <!-- Heading -->
             <div class="sidebar-heading">
                 Others

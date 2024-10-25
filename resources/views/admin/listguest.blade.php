@@ -34,6 +34,7 @@
                     <tr>
                         <th>#</th>
                         <th>Name</th>
+                        <th>Code</th>
                         <th>Room/Bed No.</th>
                         <th>Check in</th>
                         <th>Contact info</th>
@@ -45,6 +46,7 @@
                     <tr>
                         <th>#</th>
                         <th>Name</th>
+                        <th>Code</th>
                         <th>Room/Bed No.</th>
                         <th>Check in</th>
                         <th>Contact info</th>
@@ -61,6 +63,7 @@
                     <tr>
                         <td>{{$count}}</td>
                         <td>{{ $guest->first_name }} {{ $guest->last_name }}</td>
+                        <td>{{ $guest->code }}</td>
                         <td>{{ $guest->room_number }}/{{$guest->bed_number}}</td>
                         <td>{{ $guest->check_in_date }}</td>
                         <td>{{ $guest->email }} <br>{{ $guest->contact_no }} </td>

@@ -56,7 +56,7 @@
 
         $(document).ready(function(){
 
-            // Add Comment Functionality ---------------
+            // Comments Functionality---------------
             let guestId, comment;
             $(".comment-popup-open").on("click", function(){
                 guestId = $(this).attr('id');
@@ -78,7 +78,7 @@
                 });
             });
 
-            $("#close-button-for-comment").on("click", function(){
+            $("#close-button-for-comment,#close-button-cash-out-modal").on("click", function(){
                 location.reload();
             });
 
@@ -116,8 +116,10 @@
                 });
             });
 
+
+            // Archive Functionality ---------------
             let guestIdArchive, checkOutDate;
-            // Archive Guest Functionality ---------------
+
             $(".btn-for-archive-guest").on('click', function(){
                 guestIdArchive = $(this).attr('id');
             });
@@ -148,6 +150,45 @@
                     }
                 });
             });
+
+
+            // Cashout Functionality------------
+            $("#cash-out-btn").on("click", function(){
+                var selectedOption = $("input[name='cash_out_reason']:checked").val();
+                
+                if (selectedOption === "gust") {
+                    let type = "guest";
+                    let guestCode = $("#guest-code").val();
+                    let guestAmount = $("#guest-amount").val();
+                    $.ajax({
+                        url:"{{route('cashRegisterOutFlow')}}",
+                        data:{
+                            type:type,
+                            guestCode:guestCode,
+                            guestAmount:guestAmount,
+                        },
+                        success:function(data){
+                            location.reload();
+                        }
+                    });
+                } else if (selectedOption === "other") {
+                    let type = "other";
+                    let otherComments = $("#other-cash-out-comments").val();
+                    let otherAmount = $("#other-amount").val();
+                    $.ajax({
+                        url:"{{route('cashRegisterOutFlow')}}",
+                        data:{
+                            type:type,
+                            otherComments:otherComments,
+                            otherAmount : otherAmount,
+                        },
+                        success:function(data){
+                            location.reload();
+                        }
+                    });
+                }
+            });
+
         });
     </script>
 

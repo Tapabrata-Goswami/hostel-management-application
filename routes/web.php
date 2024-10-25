@@ -32,8 +32,10 @@ Route::middleware([AdminLogin::class])->prefix('/auth')->group(function () {
     Route::get('/delete-comment',[AdminDashboard::class,'deleteComment'])->name('deleteComment');
     Route::get('/paymet/{guestId}', [AdminDashboard::class,'viewPayment'])->name('viewPayment');
     Route::post('/paymet/{guestId}', [AdminDashboard::class,'updatePayment'])->name('updatePayment');
-
     Route::get('/debt-list', [AdminDashboard::class,'debetsGuest'])->name('debtList');
+    Route::get('/cash-register',[AdminDashboard::class,'cashRegister'])->name('cashRegister');
+    Route::get('/cash-register-out-flow',[AdminDashboard::class,'cashRegisterOutFlow'])->name('cashRegisterOutFlow');
+    Route::get('/cash-register-delete/{crId}', [AdminDashboard::class,'deleteCashRegister'])->name('deleteCashRegister');
 
     Route::get('/list-user',[AdminDashboard::class, 'listUserView'])->name('userList');
 });
